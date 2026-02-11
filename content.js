@@ -38,7 +38,7 @@ function promtEverything() {
 
     while (walker.nextNode()) {
         const node = walker.currentNode;
-        const txt = node.textContent.trim();
+        const txt = node.textContent;
         if (!txt.length)
             continue;
         if (chunk.length + txt.length + SEPARATOR.length >= BATCH_SIZE) {
