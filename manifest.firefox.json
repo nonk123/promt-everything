@@ -22,7 +22,6 @@
         }
     },
     "background": {
-        "persistent": false,
         "scripts": [
             "background.js"
         ]
