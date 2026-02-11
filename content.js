@@ -1,7 +1,7 @@
 const SEPARATOR = "\n\n----";
 const BATCH_SIZE = 3072;
 
-function promtChunk(targetLang, nodes, chunk) {
+function processChunk(targetLang, nodes, chunk) {
     const msg = { action: "promt", targetLang, text: chunk };
     browser.runtime.sendMessage(msg).then(r => {
         if (!r.success) {
@@ -19,18 +19,21 @@ function promtChunk(targetLang, nodes, chunk) {
     });
 }
 
-function promtEverything() {
+function determineTargetLang() {
     let fullText = "";
-    let walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     while (walker.nextNode())
         fullText += walker.currentNode.textContent;
 
     const cyrillic = (fullText.match(/\p{Script=Cyrl}/gu) || []).length;
     const nonWhitespace = (fullText.match(/\S/gu) || []).length;
     const latin = nonWhitespace - cyrillic;
-    const targetLang = cyrillic > latin ? "en" : "ru";
+    return cyrillic > latin ? "en" : "ru";
+}
 
-    walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+function promtEverything() {
+    const targetLang = determineTargetLang();
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     let chunk = "", nodes = [];
 
     while (walker.nextNode()) {
@@ -39,13 +42,13 @@ function promtEverything() {
         if (!txt.length)
             continue;
         if (chunk.length + txt.length + SEPARATOR.length >= BATCH_SIZE) {
-            promtChunk(targetLang, nodes, chunk);
+            processChunk(targetLang, nodes, chunk);
             nodes = [], chunk = "";
         }
         nodes.push(node);
         chunk += txt + SEPARATOR;
     }
-    promtChunk(targetLang, nodes, chunk);
+    processChunk(targetLang, nodes, chunk);
 }
 
 if (typeof browser === "undefined")
