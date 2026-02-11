@@ -1,7 +1,3 @@
-if (typeof browser === "undefined") {
-    window.browser = chrome;
-}
-
 function promtEverything() {
     let fullText = "";
     let walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
@@ -27,6 +23,8 @@ function promtEverything() {
     }
 }
 
+if (typeof browser === "undefined")
+    window.browser = chrome;
 browser.runtime.sendMessage({ action: "promtQueueFull" }).then(full => {
     if (full) alert("Please wait for ProMT to finish first!");
     else promtEverything();

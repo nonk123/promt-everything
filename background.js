@@ -2,10 +2,6 @@ const CONCURRENCY_LIMIT = 8;
 let fetchQueue = [];
 let activeFetches = 0;
 
-if (typeof browser === "undefined") {
-    globalThis.browser = chrome;
-}
-
 async function processRequest(request) {
     const url = `https://q7x.ru/promt?to=${request.targetLang}`;
     try {
@@ -35,6 +31,9 @@ async function processQueue() { // "Google AI Overview" code :skull:
         processRequest(request);
     }
 }
+
+if (typeof browser === "undefined")
+    globalThis.browser = chrome;
 
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "promt") {
