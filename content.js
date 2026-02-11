@@ -1,4 +1,6 @@
-const SEPARATOR = "\n\n----";
+const SEPARATOR = "\n\nЂ\n\n";
+const SEPARATOR_REGEX = /\n{2}Ђ\n{0,2}/;
+
 const BATCH_SIZE = 4096;
 
 Object.defineProperty(String.prototype, "bytes", {
@@ -36,10 +38,10 @@ function processBatch(targetLang, nodes, chunk) {
             return;
         }
 
-        const strings = r.translation.trim().split(SEPARATOR);
-        while (nodes.length) {
-            const node = nodes.shift();
-            const text = strings.shift();
+        const strings = r.translation.split(SEPARATOR_REGEX);
+        while (nodes.length > 0 && strings.length > 0) {
+            const node = nodes.pop();
+            const text = strings.pop();
             if (node.isConnected)
                 node.textContent = text;
         }
@@ -70,6 +72,10 @@ function promtEverything() {
         if (!text.length)
             continue;
 
+        // TODO: REMOVE THIS SKIP!!!
+        if (text.bytes >= BATCH_SIZE)
+            continue;
+
         const long = text.bytes >= BATCH_SIZE;
         const batchFull = chunk.bytes + text.bytes + SEPARATOR.bytes >= BATCH_SIZE;
 
@@ -82,7 +88,9 @@ function promtEverything() {
             processLongString(targetLang, node, text, 0)
         } else {
             nodes.push(node);
-            chunk += text + SEPARATOR;
+            if (chunk.length)
+                chunk += SEPARATOR;
+            chunk += text;
         }
     }
 
