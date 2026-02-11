@@ -33,12 +33,13 @@ async function processQueue() { // "Google AI Overview" code :skull:
 }
 
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action !== "promt")
-        return false;
-    request.sendResponse = sendResponse;
-    fetchQueue.push(request);
-    processQueue();
-    return true;
+    if (request.action === "promt") {
+        request.sendResponse = sendResponse;
+        fetchQueue.push(request);
+        processQueue();
+        return true;
+    } else if (request.action == "promtQueueFull")
+        sendResponse(fetchQueue.length > 0);
 })
 
 browser.action.onClicked.addListener(async (tab) => {
