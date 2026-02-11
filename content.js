@@ -1,6 +1,12 @@
 const SEPARATOR = "\n\n----";
 const BATCH_SIZE = 3072;
 
+Object.defineProperty(String.prototype, "bytes", {
+    get: function () {
+        return new TextEncoder().encode(this).length;
+    }
+})
+
 function processChunk(targetLang, nodes, chunk) {
     const msg = { action: "promt", targetLang, text: chunk };
     browser.runtime.sendMessage(msg).then(r => {
@@ -41,7 +47,7 @@ function promtEverything() {
         const txt = node.textContent;
         if (!txt.length)
             continue;
-        if (chunk.length + txt.length + SEPARATOR.length >= BATCH_SIZE) {
+        if (chunk.bytes + txt.bytes + SEPARATOR.bytes >= BATCH_SIZE) {
             processChunk(targetLang, nodes, chunk);
             nodes = [], chunk = "";
         }
