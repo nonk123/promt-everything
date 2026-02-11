@@ -1,0 +1,13 @@
+{
+    "editor.formatOnSave": false,
+    "editor.formatOnSaveMode": "file",
+    "[json]": {
+        "editor.formatOnSave": true
+    },
+    "[jsonc]": {
+        "editor.formatOnSave": true
+    },
+    "[javascript]": {
+        "editor.formatOnSave": true
+    }
+}
