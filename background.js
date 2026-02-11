@@ -2,6 +2,10 @@ const CONCURRENCY_LIMIT = 8;
 let fetchQueue = [];
 let activeFetches = 0;
 
+if (typeof browser === "undefined") {
+    globalThis.browser = chrome;
+}
+
 async function processRequest(request) {
     const url = `https://q7x.ru/promt?to=${request.targetLang}`;
     try {

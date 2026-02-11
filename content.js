@@ -1,3 +1,7 @@
+if (typeof browser === "undefined") {
+    window.browser = chrome;
+}
+
 function promtEverything() {
     let fullText = "";
     let walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
