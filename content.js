@@ -72,26 +72,20 @@ function promtEverything() {
         if (!text.length)
             continue;
 
-        // TODO: REMOVE THIS SKIP!!!
-        if (text.bytes >= BATCH_SIZE)
+        if (text.bytes >= BATCH_SIZE) {
+            processLongString(targetLang, node, text, 0);
             continue;
+        }
 
-        const long = text.bytes >= BATCH_SIZE;
-        const batchFull = chunk.bytes + text.bytes + SEPARATOR.bytes >= BATCH_SIZE;
-
-        if (long || batchFull) {
+        if (chunk.bytes + text.bytes + SEPARATOR.bytes >= BATCH_SIZE) {
             processBatch(targetLang, nodes, chunk);
             nodes = [], chunk = "";
         }
 
-        if (long) {
-            processLongString(targetLang, node, text, 0)
-        } else {
-            nodes.push(node);
-            if (chunk.length)
-                chunk += SEPARATOR;
-            chunk += text;
-        }
+        nodes.push(node);
+        if (chunk.length)
+            chunk += SEPARATOR;
+        chunk += text;
     }
 
     processBatch(targetLang, nodes, chunk);
