@@ -10,8 +10,12 @@ function promtChunk(targetLang, nodes, chunk) {
         }
 
         const strings = r.translation.split(SEPARATOR);
-        while (nodes.length)
-            nodes.shift().textContent = strings.shift();
+        while (nodes.length) {
+            const node = nodes.shift();
+            const text = strings.shift();
+            if (node.isConnected)
+                node.textContent = text;
+        }
     });
 }
 
