@@ -5,19 +5,11 @@ let activeFetches = 0;
 async function processRequest(request) {
     const url = `https://q7x.ru/promt?to=${request.targetLang}`;
     try {
-        const response = await fetch(url, {
-            method: "POST",
-            body: request.text,
-        });
-        request.sendResponse({
-            success: true,
-            translation: await response.text(),
-        });
+        const response = await fetch(url, { method: "POST", body: request.text });
+        const translation = await response.text();
+        request.sendResponse({ success: true, translation });
     } catch (error) {
-        request.sendResponse({
-            success: false,
-            translation: "",
-        })
+        request.sendResponse({ success: false, error });
     } finally {
         activeFetches--;
         processQueue();
@@ -26,9 +18,8 @@ async function processRequest(request) {
 
 async function processQueue() { // "Google AI Overview" code :skull:
     while (fetchQueue.length > 0 && activeFetches < CONCURRENCY_LIMIT) {
-        const request = fetchQueue.shift();
         activeFetches++;
-        processRequest(request);
+        processRequest(fetchQueue.shift());
     }
 }
 
@@ -41,8 +32,9 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
         fetchQueue.push(request);
         processQueue();
         return true;
-    } else if (request.action == "promtQueueFull")
-        sendResponse(fetchQueue.length > 0);
+    } else if (request.action == "promtInProgress") {
+        sendResponse(fetchQueue.length > 0 || activeFetches > 0);
+    }
 })
 
 browser.action.onClicked.addListener(async (tab) => {

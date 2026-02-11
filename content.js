@@ -1,3 +1,20 @@
+const SEPARATOR = "\n\n----";
+const BATCH_SIZE = 3072;
+
+function promtChunk(targetLang, nodes, chunk) {
+    const msg = { action: "promt", targetLang, text: chunk };
+    browser.runtime.sendMessage(msg).then(r => {
+        if (!r.success) {
+            console.error(r.error);
+            return;
+        }
+
+        const strings = r.translation.split(SEPARATOR);
+        while (nodes.length)
+            nodes.shift().textContent = strings.shift();
+    });
+}
+
 function promtEverything() {
     let fullText = "";
     let walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
@@ -10,22 +27,29 @@ function promtEverything() {
     const targetLang = cyrillic > latin ? "en" : "ru";
 
     walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    let chunk = "", nodes = [];
+
     while (walker.nextNode()) {
         const node = walker.currentNode;
         const txt = node.textContent.trim();
         if (!txt.length)
             continue;
-        const msg = { action: "promt", targetLang, text: txt };
-        browser.runtime.sendMessage(msg).then(r => {
-            if (!r.success) return;
-            node.textContent = r.translation;
-        });
+        if (chunk.length + txt.length + SEPARATOR.length >= BATCH_SIZE) {
+            promtChunk(targetLang, nodes, chunk);
+            nodes = [], chunk = "";
+        }
+        nodes.push(node);
+        chunk += txt + SEPARATOR;
     }
+    promtChunk(targetLang, nodes, chunk);
 }
 
 if (typeof browser === "undefined")
     window.browser = chrome;
-browser.runtime.sendMessage({ action: "promtQueueFull" }).then(full => {
-    if (full) alert("Please wait for ProMT to finish first!");
-    else promtEverything();
+
+browser.runtime.sendMessage({ action: "promtInProgress" }).then(inProgress => {
+    if (inProgress)
+        alert("Please wait for ProMT to finish first!");
+    else
+        promtEverything();
 });
