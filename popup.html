@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProMT Everything</title>
+    <style>
+        html {
+            min-height: 5em;
+            min-width: 10em;
+
+            background: ghostwhite;
+            color: black;
+        }
+
+        body {
+            display: flex;
+            flex-flow: column nowrap;
+        }
+
+        body > * {
+            flex-grow: 1;
+        }
+
+        #flags {
+            display: flex;
+            flex-flow: row wrap;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="flags">
+        <div>
+            <label for="wasted">WASTED</label>
+            <input id="wasted" type="checkbox">
+        </div>
+    </div>
+
+    <button id="translate">Translate</button>
+    <div id="log"></div>
+
+    <script src="popup.js"></script>
+</body>
+
+</html>

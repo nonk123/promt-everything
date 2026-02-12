@@ -44,7 +44,7 @@ if (typeof browser === "undefined")
     globalThis.browser = chrome;
 
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === "promt") {
+    if (request.action === "callPromt") {
         request.sendResponse = sendResponse;
         fetchQueue.push(request);
         processQueue();
@@ -53,14 +53,3 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
         sendResponse(fetchQueue.length > 0 || activeFetches > 0);
     }
 })
-
-browser.action.onClicked.addListener(async (tab) => {
-    try {
-        await browser.scripting.executeScript({
-            files: ["content.js"],
-            target: { tabId: tab.id },
-        });
-    } catch (ex) {
-        console.error(ex);
-    }
-});

@@ -16,7 +16,7 @@ function processLongString(targetLang, node, remainder, depth) {
     const chunk = remainder.bytes > BATCH_SIZE ? remainder.substring(0, BATCH_SIZE) : remainder;
     remainder = remainder.bytes > BATCH_SIZE ? remainder.substring(BATCH_SIZE) : "";
 
-    const msg = { action: "promt", targetLang, text: chunk };
+    const msg = { action: "callPromt", targetLang, text: chunk };
     browser.runtime.sendMessage(msg).then(r => {
         if (!r.success) {
             console.error(r.error);
@@ -38,7 +38,7 @@ function processBatch(targetLang, nodes, chunk) {
     if (!nodes.length || !chunk.length)
         return;
 
-    const msg = { action: "promt", targetLang, text: chunk };
+    const msg = { action: "callPromt", targetLang, text: chunk };
     browser.runtime.sendMessage(msg).then(r => {
         if (!r.success) {
             console.error(r.error);
@@ -72,7 +72,9 @@ function determineTargetLang() {
     return cyrillic > latin ? "en" : "ru";
 }
 
-function promtEverything() {
+function promtDocument(args) {
+    const { wasted } = args; // TODO: use
+
     const targetLang = determineTargetLang();
     const walker = createTreeWalker();
     let chunk = "", nodes = [];
@@ -106,9 +108,16 @@ function promtEverything() {
 if (typeof browser === "undefined")
     window.browser = chrome;
 
-browser.runtime.sendMessage({ action: "promtInProgress" }).then(inProgress => {
-    if (inProgress)
-        alert("Please wait for ProMT to finish first!");
-    else
-        promtEverything();
-});
+browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action !== "promtEverything")
+        return;
+    browser.runtime.sendMessage({ action: "promtInProgress" }).then(inProgress => {
+        if (inProgress) {
+            sendResponse({ success: false, error: "Please wait for ProMT to finish first!" });
+        } else {
+            promtDocument(request.args);
+            sendResponse({ success: true });
+        }
+    });
+    return true;
+})
