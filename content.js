@@ -22,7 +22,9 @@ function processLongString(targetLang, node, remainder, depth) {
             console.error(r.error);
             return;
         }
-        node.textContent = depth ? r.translation : node.textContent + r.translation;
+        if (!depth)
+            node.textContent = "";
+        node.textContent += r.translation;
         processLongString(targetLang, node, remainder, depth + 1);
     });
 }
