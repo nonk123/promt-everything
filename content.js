@@ -22,9 +22,14 @@ function processLongString(targetLang, node, remainder, depth) {
             console.error(r.error);
             return;
         }
+
+        if (!node.isConnected)
+            return;
+
         if (!depth)
             node.textContent = "";
         node.textContent += r.translation;
+
         processLongString(targetLang, node, remainder, depth + 1);
     });
 }
@@ -44,15 +49,20 @@ function processBatch(targetLang, nodes, chunk) {
         while (nodes.length > 0 && strings.length > 0) {
             const node = nodes.pop();
             const text = strings.pop();
+
             if (node.isConnected)
                 node.textContent = text;
         }
     });
 }
 
+function createTreeWalker() {
+    return document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+}
+
 function determineTargetLang() {
     let fullText = "";
-    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    const walker = createTreeWalker();
     while (walker.nextNode())
         fullText += walker.currentNode.textContent;
 
@@ -64,7 +74,7 @@ function determineTargetLang() {
 
 function promtEverything() {
     const targetLang = determineTargetLang();
-    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    const walker = createTreeWalker();
     let chunk = "", nodes = [];
 
     while (walker.nextNode()) {

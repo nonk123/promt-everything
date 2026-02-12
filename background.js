@@ -3,9 +3,7 @@ let fetchQueue = [];
 let activeFetches = 0;
 
 async function processRequest(request) {
-    let addLeft = "";
-    let addRight = "";
-
+    let addLeft = "", addRight = "";
     let body = request.text;
     let len = body.length;
 
@@ -60,9 +58,7 @@ browser.action.onClicked.addListener(async (tab) => {
     try {
         await browser.scripting.executeScript({
             files: ["content.js"],
-            target: {
-                tabId: tab.id,
-            },
+            target: { tabId: tab.id },
         });
     } catch (ex) {
         console.error(ex);
