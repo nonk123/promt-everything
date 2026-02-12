@@ -71,7 +71,7 @@ function promtEverything() {
         const node = walker.currentNode;
         const text = node.textContent;
 
-        if (!text.length)
+        if (!text.trim().length)
             continue;
 
         if (text.bytes >= BATCH_SIZE) {
