@@ -8,9 +8,7 @@
     <title>ProMT Everything</title>
     <style>
         html {
-            min-height: 5em;
-            min-width: 10em;
-
+            min-width: 20ch;
             background: ghostwhite;
             color: black;
         }
@@ -29,20 +27,19 @@
             flex-flow: row wrap;
         }
     </style>
+    <script src="popup.js"></script>
 </head>
 
 <body>
     <div id="flags">
-        <div>
-            <label for="wasted">WASTED</label>
+        <label>
             <input id="wasted" type="checkbox">
-        </div>
+            WASTED
+        </label>
     </div>
 
     <button id="translate">Translate</button>
     <div id="log"></div>
-
-    <script src="popup.js"></script>
 </body>
 
 </html>

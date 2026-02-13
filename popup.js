@@ -1,4 +1,4 @@
-translate.addEventListener("click", () => {
+function promtEverything() {
     chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
         if (!tabs || !tabs.length)
             return;
@@ -10,4 +10,8 @@ translate.addEventListener("click", () => {
                 log.textContent += "ERROR: " + res.error + "\n";
         })
     });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    translate.addEventListener("click", promtEverything);
 });
