@@ -8,6 +8,8 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v6
       - name: Assemble
         env:
           FILES: manifest.json *.{html,js,css} icons .github/assets README LICENSE
