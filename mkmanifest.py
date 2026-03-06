@@ -4,7 +4,7 @@ import json
 import sys
 
 NAME = "ProMT Everything"
-DESCRIPTION = "Adds a button that feeds your whole tab into ProMT."
+DESCRIPTION = "Adds a button that feeds your whole tab into ProMT through an external public API."
 VERSION = "0.1.0"
 
 GECKO_ID = "promt-everything@nonk.dev"
