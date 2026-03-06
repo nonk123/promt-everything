@@ -1,0 +1,27 @@
+name: Publish to extension marketplaces
+
+on:
+  push:
+    tags: [v*]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assemble
+        env:
+          FILES: manifest.json *.{html,js,css} icons .github/assets README LICENSE
+        run: |
+          function package() {
+            ./mkmanifest.py $1
+            zip -r $1.zip ${{ env.FILES }}
+          }
+
+          package firefox
+      - name: Publish to Firefox Addons
+        uses: wdzeng/firefox-addon@v1
+        with:
+          addon-guid: promt-everything@nonk.dev
+          xpi-path: firefox.zip
+          jwt-issuer: ${{ secrets.FIREFOX_JWT_ISSUER }}
+          jwt-secret: ${{ secrets.FIREFOX_JWT_SECRET }}
