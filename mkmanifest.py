@@ -43,9 +43,11 @@ if generator != "firefox" and generator != "chrome":
 
 browser_specifics = {} if generator == "chrome" else {
     "browser_specific_settings": {
-        "gecko": { "id": GECKO_ID },
-        "data_collection_permissions": {
-            "required": ["none"]
+        "gecko": {
+            "id": GECKO_ID,
+            "data_collection_permissions": {
+                "required": ["none"]
+            }
         },
     }
 }
