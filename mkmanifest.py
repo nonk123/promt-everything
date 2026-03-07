@@ -53,7 +53,9 @@ def main():
             "browser_specific_settings": {
                 "gecko": {
                     "id": GECKO_ID,
-                    "data_collection_permissions": {"required": ["none"]},
+                    "data_collection_permissions": {
+                        "required": ["none"],
+                    },
                 },
             }
         }
